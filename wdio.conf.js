@@ -1,4 +1,5 @@
-const buildUrl = 'https://www.pecodesoftware.com/qa-portal/registerlogin/registerlogin.php';
+const video = require('wdio-video-reporter');
+
 exports.config = {
     //
     // ====================
@@ -98,7 +99,7 @@ exports.config = {
     // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
     // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
     // gets prepended directly.
-    baseUrl: buildUrl,
+    baseUrl: 'http://localhost',
     //
     // Default timeout for all waitFor* commands.
     waitforTimeout: 10000,
@@ -136,7 +137,24 @@ exports.config = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: https://webdriver.io/docs/dot-reporter
-    reporters: ['spec'],
+    reporters: ['spec',
+    ['mochawesome',{
+        outputDir: './Results',
+        outputFileFormat: function(opts) { 
+            return `results-1.json`
+        }
+    }],
+    [video, {
+        saveAllVideos: true,       // If true, also saves videos for successful test cases
+        videoSlowdownMultiplier: 3, // Higher to get slower videos, lower for faster videos [Value 1-100]
+        videoRenderTimeout: 60
+      }],
+      ['allure', {
+        outputDir: './_results_/allure-raw',
+        disableWebdriverStepsReporting: true,
+        disableWebdriverScreenshotsReporting: true,
+      }],
+   ],
 
 
     
@@ -189,9 +207,8 @@ exports.config = {
      * @param {Array.<String>} specs        List of spec file paths that are to be run
      * @param {Object}         browser      instance of created browser/device session
      */
-    before: function (capabilities, specs) {
-        global.baseUrl = buildUrl;
-    },
+    // before: function (capabilities, specs) {
+    // },
     /**
      * Runs before a WebdriverIO command gets executed.
      * @param {String} commandName hook command name
@@ -269,8 +286,11 @@ exports.config = {
      * @param {Array.<Object>} capabilities list of capabilities details
      * @param {<Object>} results object containing test results
      */
-    // onComplete: function(exitCode, config, capabilities, results) {
-    // },
+    onComplete: function(exitCode, config, capabilities, results) {
+        const mergeResults = require('wdio-mochawesome-reporter/mergeResults')
+        mergeResults('./Results', "results-*")
+      
+    },
     /**
     * Gets executed when a refresh happens.
     * @param {String} oldSessionId session ID of the old session

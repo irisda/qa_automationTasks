@@ -1,1 +1,7 @@
-node_modules
+# Node artifact files
+node_modules/
+dist/
+
+# Allure Report 
+_results_/
+allure-report/
