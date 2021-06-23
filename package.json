@@ -18,6 +18,7 @@
   "homepage": "https://github.com/irisda/qa_automationTasks#readme",
   "dependencies": {
     "@wdio/cli": "^7.7.3",
+    "allure-commandline": "^2.13.8",
     "wdio-video-reporter": "^3.1.1"
   },
   "devDependencies": {

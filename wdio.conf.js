@@ -1,4 +1,5 @@
 const video = require('wdio-video-reporter');
+const buildUrl = 'https://www.pecodesoftware.com/qa-portal/registerlogin/registerlogin.php';
 
 exports.config = {
     //
@@ -99,7 +100,7 @@ exports.config = {
     // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
     // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
     // gets prepended directly.
-    baseUrl: 'http://localhost',
+    baseUrl: buildUrl,
     //
     // Default timeout for all waitFor* commands.
     waitforTimeout: 10000,
@@ -144,15 +145,15 @@ exports.config = {
             return `results-1.json`
         }
     }],
-    [video, {
-        saveAllVideos: true,       // If true, also saves videos for successful test cases
-        videoSlowdownMultiplier: 3, // Higher to get slower videos, lower for faster videos [Value 1-100]
-        videoRenderTimeout: 60
-      }],
+    // [video, {
+    //     saveAllVideos: false,       // If true, also saves videos for successful test cases
+    //     videoSlowdownMultiplier: 3, // Higher to get slower videos, lower for faster videos [Value 1-100]
+    //     videoRenderTimeout: 60
+    //   }],
       ['allure', {
-        outputDir: './_results_/allure-raw',
-        disableWebdriverStepsReporting: true,
-        disableWebdriverScreenshotsReporting: true,
+        outputDir: 'allure-results',
+        disableWebdriverStepsReporting: false,
+        disableWebdriverScreenshotsReporting: false,
       }],
    ],
 
@@ -207,8 +208,9 @@ exports.config = {
      * @param {Array.<String>} specs        List of spec file paths that are to be run
      * @param {Object}         browser      instance of created browser/device session
      */
-    // before: function (capabilities, specs) {
-    // },
+    before: function (capabilities, specs) {
+        global.baseUrl = buildUrl;
+    },
     /**
      * Runs before a WebdriverIO command gets executed.
      * @param {String} commandName hook command name
@@ -242,8 +244,14 @@ exports.config = {
     /**
      * Function to be executed after a test (in Mocha/Jasmine).
      */
-    // afterTest: function(test, context, { error, result, duration, passed, retries }) {
-    // },
+    afterTest: function(test, context, { error, result, duration, passed, retries }) {
+       //take screenshot if test cases fail
+        if (!passed) {
+         browser.takeScreenshot();
+         browser.saveScreenshot('./Screenshots/screenshot.png');
+             
+          }
+    },
 
 
     /**

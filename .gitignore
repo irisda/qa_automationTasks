@@ -4,4 +4,4 @@ dist/
 
 # Allure Report 
 _results_/
-allure-report/
+allure-results/
